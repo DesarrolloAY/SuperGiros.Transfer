@@ -1,15 +1,18 @@
 using AutoMapper;
 using Grpc.Core;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using SuperGiros.Transfer.Services.gRPC.Protos;
 using SuperGiros.Transfer.Application.UseCases.Features.Customer.Commands.CreateCustomer;
 using SuperGiros.Transfer.Application.UseCases.Features.Customer.Commands.CancelCustomer;
 using SuperGiros.Transfer.Application.UseCases.Features.Customer.Commands.UpdateCustomer;
 using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetCustomer;
 using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetAllCustomer;
+using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetCustomerByDni; // ✅ Importamos el nuevo caso de uso
 
 namespace SuperGiros.Transfer.Services.gRPC.Services
 {
+    [Authorize] // 🔒 Protegemos el servicio con JWT
     public class CustomerService : Customers.CustomersBase
     {
         private readonly IMapper _mapper;
@@ -35,6 +38,7 @@ namespace SuperGiros.Transfer.Services.gRPC.Services
             }
             else
             {
+                serverResponse.IsSuccess = false;
                 serverResponse.Message = "No se encontraron clientes";
             }
 
@@ -44,20 +48,23 @@ namespace SuperGiros.Transfer.Services.gRPC.Services
 
         public override async Task<GetCustomerResponse> GetCustomer(GetCustomerRequest request, ServerCallContext context)
         {
-            var customerDto = await _mediator.Send(new GetCustomerQuery() { Id = request.Id });
+            // 🚀 Usamos el nuevo Query enviando el Id del Proto como NroDocumento (DNI)
+            var customerDto = await _mediator.Send(new GetCustomerByDniQuery { NroDocumento = request.Id });
+
             var response = new GetCustomerResponse();
             var serverResponse = new ServerResponse();
 
             if (customerDto is null)
             {
-                serverResponse.Message = $"No se encontró el Cliente #: {request.Id}";
+                serverResponse.IsSuccess = false;
+                serverResponse.Message = "Cliente no encontrado. Se requiere registro manual.";
                 response.ServerResponse = serverResponse;
                 return response;
             }
 
             response.Data = _mapper.Map<CustomerResponse>(customerDto);
             serverResponse.IsSuccess = true;
-            serverResponse.Message = "Consulta Exitosa";
+            serverResponse.Message = "Cliente encontrado con éxito";
             response.ServerResponse = serverResponse;
             return response;
         }
@@ -77,6 +84,7 @@ namespace SuperGiros.Transfer.Services.gRPC.Services
             }
             else
             {
+                serverResponse.IsSuccess = false;
                 serverResponse.Message = "Error al crear el Cliente";
             }
 
@@ -94,6 +102,7 @@ namespace SuperGiros.Transfer.Services.gRPC.Services
 
             if (estado)
             {
+                // 🛡️ Mantenemos el Query normal por Id interno para no afectar la actualización en el panel admin
                 var customerDto = await _mediator.Send(new GetCustomerQuery() { Id = request.Id });
                 if (customerDto != null)
                 {
@@ -103,11 +112,13 @@ namespace SuperGiros.Transfer.Services.gRPC.Services
                 }
                 else
                 {
+                    serverResponse.IsSuccess = false;
                     serverResponse.Message = "Se actualizó pero no se pudo recuperar para la respuesta";
                 }
             }
             else
             {
+                serverResponse.IsSuccess = false;
                 serverResponse.Message = $"No se encontró el Cliente #: {request.Id}";
             }
 
@@ -129,6 +140,7 @@ namespace SuperGiros.Transfer.Services.gRPC.Services
             }
             else
             {
+                serverResponse.IsSuccess = false;
                 serverResponse.Message = $"No se encontró el Cliente #: {request.Id}";
             }
 

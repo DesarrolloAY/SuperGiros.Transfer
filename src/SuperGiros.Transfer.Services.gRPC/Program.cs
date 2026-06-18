@@ -16,8 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1. KESTREL: HTTP1 para Swagger/REST + HTTP2 para gRPC
 builder.WebHost.ConfigureKestrel(options => {
-    options.ListenAnyIP(5220, o => o.Protocols = HttpProtocols.Http1AndHttp2);
-    options.ListenAnyIP(5221, o => o.Protocols = HttpProtocols.Http2);
+    options.ListenAnyIP(5240, o => o.Protocols = HttpProtocols.Http1AndHttp2);
+    options.ListenAnyIP(5241, o => o.Protocols = HttpProtocols.Http2);
 });
 
 // =========================================================
@@ -95,10 +95,11 @@ builder.Services.AddAuthorization();
 // 3. gRPC + Interceptores
 builder.Services.AddScoped<GlobalExceptionHandler>();
 builder.Services.AddScoped<AuthInterceptor>();
-builder.Services.AddGrpc(options => {
+builder.Services.AddGrpc(options =>
+{
     options.Interceptors.Add<GlobalExceptionHandler>();
     options.Interceptors.Add<AuthInterceptor>();
-});
+}).AddJsonTranscoding();
 
 // 4. Capas de la aplicación
 builder.Services.AddApplicationLayer();
