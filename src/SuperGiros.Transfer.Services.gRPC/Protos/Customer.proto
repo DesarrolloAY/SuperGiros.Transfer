@@ -1,8 +1,11 @@
 syntax = "proto3";
+
 import "google/protobuf/timestamp.proto";
 import "Protos/Common.proto";
 
 option csharp_namespace = "SuperGiros.Transfer.Services.gRPC.Protos";
+
+package Protos;
 
 service Customers {
     rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerResponse);
@@ -10,6 +13,9 @@ service Customers {
     rpc CancelCustomer (CancelCustomerRequest) returns (CancelCustomerResponse);
     rpc GetCustomer    (GetCustomerRequest)    returns (GetCustomerResponse);
     rpc GetAllCustomer (GetAllCustomerRequest) returns (GetAllCustomerResponse);
+    
+    // 🚀 NUEVA RUTA DE VENTANILLA: Busca explícitamente usando el parámetro NroDocumento (DNI)
+    rpc GetCustomerByDni (GetCustomerByDniRequest) returns (GetCustomerResponse);
 }
 
 enum CustomerDocumentType {
@@ -17,14 +23,17 @@ enum CustomerDocumentType {
     CE  = 1;
 }
 
-// Estado global: Inactivo=0, Activo=1, Completado=2
 enum CustomerState {
     CUSTOMER_INACTIVO   = 0;
     CUSTOMER_ACTIVO     = 1;
     CUSTOMER_COMPLETADO = 2;
 }
 
-// ✅ Sin campo Id: la BD lo genera automáticamente (IDENTITY)
+// 🔍 NUEVO MENSAJE DE ENTRADA EXCLUSIVO PARA EL DNI
+message GetCustomerByDniRequest {
+    int32 NroDocumento = 1; 
+}
+
 message CreateCustomerRequest {
     string               Nombre          = 1;
     string               ApellidoPaterno = 2;
@@ -59,12 +68,17 @@ message CancelCustomerRequest  { int32 Id = 1; }
 message CancelCustomerResponse { ServerResponse ServerResponse = 1; }
 
 message GetCustomerRequest     { int32 Id = 1; }
-message GetCustomerResponse    { ServerResponse ServerResponse = 1; CustomerResponse Data = 2; }
+message GetCustomerResponse    { 
+    ServerResponse ServerResponse = 1; 
+    CustomerResponse Data = 2; 
+}
 
 message GetAllCustomerRequest  {}
-message GetAllCustomerResponse { ServerResponse ServerResponse = 1; repeated CustomerResponse Data = 2; }
+message GetAllCustomerResponse { 
+    ServerResponse ServerResponse = 1; 
+    repeated CustomerResponse Data = 2; 
+}
 
-// ✅ Incluye State para que el cliente sepa si el registro está activo o cancelado
 message CustomerResponse {
     int32                Id              = 1;
     string               Nombre          = 2;
@@ -73,6 +87,6 @@ message CustomerResponse {
     string               Celular         = 5;
     string               email           = 6;
     CustomerDocumentType TipoDocumento   = 7;
-    int32                NroDocumento    = 8;
+    int32                NroDocumento    = 8; // 💳 Este campo representará tu DNI/CE en el Frontend
     CustomerState        State           = 9;
 }

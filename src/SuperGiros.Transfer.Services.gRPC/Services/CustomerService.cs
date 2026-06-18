@@ -8,11 +8,11 @@ using SuperGiros.Transfer.Application.UseCases.Features.Customer.Commands.Cancel
 using SuperGiros.Transfer.Application.UseCases.Features.Customer.Commands.UpdateCustomer;
 using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetCustomer;
 using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetAllCustomer;
-using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetCustomerByDni; // ✅ Importamos el nuevo caso de uso
+using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetCustomerByDni;
 
 namespace SuperGiros.Transfer.Services.gRPC.Services
 {
-    [Authorize] // 🔒 Protegemos el servicio con JWT
+    [Authorize]
     public class CustomerService : Customers.CustomersBase
     {
         private readonly IMapper _mapper;
@@ -48,9 +48,30 @@ namespace SuperGiros.Transfer.Services.gRPC.Services
 
         public override async Task<GetCustomerResponse> GetCustomer(GetCustomerRequest request, ServerCallContext context)
         {
-            // 🚀 Usamos el nuevo Query enviando el Id del Proto como NroDocumento (DNI)
-            var customerDto = await _mediator.Send(new GetCustomerByDniQuery { NroDocumento = request.Id });
+            // Mantiene la búsqueda tradicional por llave primaria (ID interno)
+            var customerDto = await _mediator.Send(new GetCustomerQuery { Id = request.Id });
+            var response = new GetCustomerResponse();
+            var serverResponse = new ServerResponse();
 
+            if (customerDto is null)
+            {
+                serverResponse.IsSuccess = false;
+                serverResponse.Message = "Cliente no encontrado por ID.";
+                response.ServerResponse = serverResponse;
+                return response;
+            }
+
+            response.Data = _mapper.Map<CustomerResponse>(customerDto);
+            serverResponse.IsSuccess = true;
+            serverResponse.Message = "Cliente obtenido correctamente.";
+            response.ServerResponse = serverResponse;
+            return response;
+        }
+
+        public override async Task<GetCustomerResponse> GetCustomerByDni(GetCustomerByDniRequest request, ServerCallContext context)
+        {
+            // Endpoint semántico exclusivo para la ventanilla que mapea por DNI
+            var customerDto = await _mediator.Send(new GetCustomerByDniQuery { NroDocumento = request.NroDocumento });
             var response = new GetCustomerResponse();
             var serverResponse = new ServerResponse();
 
@@ -102,7 +123,6 @@ namespace SuperGiros.Transfer.Services.gRPC.Services
 
             if (estado)
             {
-                // 🛡️ Mantenemos el Query normal por Id interno para no afectar la actualización en el panel admin
                 var customerDto = await _mediator.Send(new GetCustomerQuery() { Id = request.Id });
                 if (customerDto != null)
                 {

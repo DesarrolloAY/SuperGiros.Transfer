@@ -1,10 +1,9 @@
-﻿// src/SuperGiros.Transfer.Application.UseCases/Features/Customer/Querys/GetCustomerByDni/GetCustomerByDniHandler.cs
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SuperGiros.Transfer.Application.Interfaces.Persistence;
 using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetCustomer;
-using SuperGiros.Transfer.Domain.Enums; // 🛠️ CORRECCIÓN: Necesario para comparar el estado
+using SuperGiros.Transfer.Domain.Enums; // ✅ Necesario para mapear el Enum del Estado
 
 namespace SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetCustomerByDni
 {
@@ -21,12 +20,13 @@ namespace SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetC
 
         public async Task<GetCustomerResponseDto> Handle(GetCustomerByDniQuery request, CancellationToken cancellationToken)
         {
-            // 🛠️ CORRECCIÓN: Comparamos int con int, y casteamos el Enum para la validación de estado
+            // 🔄 CORRECCIÓN AQUÍ: Usamos x.State (que viene de BaseAuditableEntity) 
+            // y lo comparamos usando el Enum nativo State.Activo para que Entity Framework compile limpio.
             var customer = await _applicationDbContext.customers
-                .FirstOrDefaultAsync(x => x.NroDocumento == request.NroDocumento && (int)x.State == 1, cancellationToken);
+                .FirstOrDefaultAsync(x => x.NroDocumento == request.NroDocumento && x.State == State.Activo, cancellationToken);
 
-            // Reutilizamos el mapa existente de Customer -> GetCustomerResponseDto
-            return _mapper.Map<GetCustomerResponseDto>(customer);
+            var response = _mapper.Map<GetCustomerResponseDto>(customer);
+            return response;
         }
     }
 }
