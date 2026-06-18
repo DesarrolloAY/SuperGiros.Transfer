@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: supergiros-api
-        image: supergiros-api:dev
-        imagePullPolicy: Never   # usa imagen local de minikube
+        image: supergirostransfer-api:latest
+        imagePullPolicy: IfNotPresent   
         ports:
         - containerPort: 5220   # HTTP1 / Swagger
         - containerPort: 5221   # HTTP2 / gRPC
