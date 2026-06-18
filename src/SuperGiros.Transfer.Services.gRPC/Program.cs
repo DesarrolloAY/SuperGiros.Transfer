@@ -10,7 +10,6 @@ using SuperGiros.Transfer.Services.gRPC.Commons.Auth;
 using SuperGiros.Transfer.Services.gRPC.Commons.GlobalExceptions;
 using SuperGiros.Transfer.Services.gRPC.Services;
 using System.Text;
-using SuperGiros.Transfer.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +19,21 @@ builder.WebHost.ConfigureKestrel(options => {
     options.ListenAnyIP(5220, o => o.Protocols = HttpProtocols.Http1AndHttp2);
     options.ListenAnyIP(5221, o => o.Protocols = HttpProtocols.Http2);
 });
+
+// =========================================================
+// 🔴 NUEVO: CONFIGURACIÓN DE CORS PARA REACT
+// =========================================================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // El puerto de Vite/React
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+    });
+});
+// =========================================================
 
 // 2. JWT con eventos de error personalizados (mensajes claros en Postman)
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
@@ -52,7 +66,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     ? "Token JWT requerido. Genera uno en POST /api/Auth/login"
                     : $"Token inválido o expirado: {context.ErrorDescription}. Genera uno nuevo en POST /api/Auth/login";
                 await context.Response.WriteAsync(
-                    System.Text.Json.JsonSerializer.Serialize(new {
+                    System.Text.Json.JsonSerializer.Serialize(new
+                    {
                         error = "No autorizado",
                         mensaje,
                         status = 401,
@@ -65,7 +80,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 context.Response.StatusCode = 403;
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(
-                    System.Text.Json.JsonSerializer.Serialize(new {
+                    System.Text.Json.JsonSerializer.Serialize(new
+                    {
                         error = "Acceso denegado",
                         mensaje = "No tienes permisos suficientes para este recurso. Se requiere rol Admin.",
                         status = 403,
@@ -94,8 +110,8 @@ builder.Services.AddMessaging();
 // 6. AutoMapper + Swagger
 builder.Services.AddAutoMapper(
     typeof(SuperGiros.Transfer.Application.UseCases.Commons.Mapping.MappingProfile),
-    typeof(SuperGiros.Transfer.Services.gRPC.Commons.Mappings.MappingProfile)
-);
+    typeof(SuperGiros.Transfer.Services.gRPC.Commons.Mappings.MappingProfile));
+
 builder.Services.AddControllers();
 builder.Services.AddGrpcSwagger();
 builder.Services.AddSwaggerGen(c => {
@@ -128,18 +144,28 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SuperGiros v1"));
 }
 
+// =========================================================
+// 🔴 NUEVO: APLICAR CORS Y GRPC-WEB (ANTES DE AUTHENTICATION)
+// =========================================================
+app.UseCors("ReactPolicy");
+app.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true });
+// =========================================================
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGrpcService<UserService>();
-app.MapGrpcService<CustomerService>();
-app.MapGrpcService<OfficeService>();
-app.MapGrpcService<TransactionService>();
-app.MapGrpcService<GreeterService>();
+// =========================================================
+// 🔴 NUEVO: AÑADIR .EnableGrpcWeb() A TUS SERVICIOS EXISTENTES
+// =========================================================
+app.MapGrpcService<UserService>().EnableGrpcWeb();
+app.MapGrpcService<CustomerService>().EnableGrpcWeb();
+app.MapGrpcService<OfficeService>().EnableGrpcWeb();
+app.MapGrpcService<TransactionService>().EnableGrpcWeb();
+app.MapGrpcService<GreeterService>().EnableGrpcWeb();
+// =========================================================
 
 app.MapControllers();
 app.MapGet("/", () => "✅ SuperGiros Transfer Service activo");
-
 
 // Auto-migración al iniciar en Docker
 using (var scope = app.Services.CreateScope())
