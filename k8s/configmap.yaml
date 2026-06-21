@@ -4,8 +4,10 @@ metadata:
   name: supergiros-config
   namespace: default
 data:
-  ASPNETCORE_ENVIRONMENT: "Production"
+  ASPNETCORE_ENVIRONMENT: "Development"
   JwtSettings__Issuer: "SuperGiros.Transfer.API"
   JwtSettings__Audience: "SuperGiros.Transfer.Users"
   JwtSettings__ExpirationHours: "1"
   MSSQL_PID: "Express"
+  # 🌟 NUEVO: Esto inyecta la URL de React para que el backend acepte las peticiones en Kubernetes
+  CorsSettings__AllowedOrigins__0: "http://localhost:5173"

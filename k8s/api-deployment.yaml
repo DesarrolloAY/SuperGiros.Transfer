@@ -15,12 +15,15 @@ spec:
     spec:
       containers:
       - name: supergiros-api
-        image: supergirostransfer-api:latest
-        imagePullPolicy: IfNotPresent   
+        image: supergiros-api:latest
+        imagePullPolicy: Never
         ports:
-        - containerPort: 5220   # HTTP1 / Swagger
-        - containerPort: 5221   # HTTP2 / gRPC
+        - containerPort: 5240   # HTTP1 / Swagger
+        - containerPort: 5241   # HTTP2 / gRPC
         env:
+        # 🌟 VITAL: Esto le ordena a .NET en Docker respetar tus dos puertos nativos
+        - name: ASPNETCORE_URLS
+          value: "http://+:5240;http://+:5241"
         - name: ASPNETCORE_ENVIRONMENT
           valueFrom:
             configMapKeyRef:
@@ -54,7 +57,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /
-            port: 5220
+            port: 5240          # Golpea el puerto HTTP1 para saber si está vivo
           initialDelaySeconds: 20
           periodSeconds: 10
         resources:
@@ -75,11 +78,11 @@ spec:
     app: supergiros-api
   ports:
   - name: http
-    port: 5220
-    targetPort: 5220
-    nodePort: 30220
+    port: 5240
+    targetPort: 5240
+    nodePort: 30220             # Tu puerto externo para Swagger / REST
   - name: grpc
-    port: 5221
-    targetPort: 5221
-    nodePort: 30221
+    port: 5241
+    targetPort: 5241
+    nodePort: 30221             # Tu puerto externo exclusivo para el tráfico gRPC binario
   type: NodePort

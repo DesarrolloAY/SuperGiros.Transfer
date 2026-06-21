@@ -4,6 +4,9 @@ import "Protos/Common.proto";
 
 option csharp_namespace = "SuperGiros.Transfer.Services.gRPC.Protos";
 
+// ✅ LÍNEA CLAVE AGREGADA:
+package Protos;
+
 service Transactions {
     rpc CreateTransaction (CreateTransactionRequest) returns (CreateTransactionResponse);
     rpc UpdateTransaction (UpdateTransactionRequest) returns (UpdateTransactionResponse);
