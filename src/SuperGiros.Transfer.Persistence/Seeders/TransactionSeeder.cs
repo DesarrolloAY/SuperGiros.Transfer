@@ -25,7 +25,8 @@ namespace SuperGiros.Transfer.Persistence.Seeders
                     Descripcion = "Depósito inicial de fondos",
                     Sede = "Cusco",             // <-- Agregado
                     FechaRealizacion = fechaEstatica,    // <-- Agregado
-                    State = State.Activo, // <--- AGREGA ESTO
+                    State = State.Activo,
+                    Fase = FaseGiro.Registrado,// <--- AGREGA ESTO
                     CreatedBy = "System",
                     Created = fechaEstatica,
                     LastModifyBy = "",                   // <-- Nombre corregido
@@ -41,7 +42,8 @@ namespace SuperGiros.Transfer.Persistence.Seeders
                     Descripcion = "Retiro a cuenta bancaria",
                     Sede = "Mazuko",               // <-- Agregado
                     FechaRealizacion = fechaEstatica,    // <-- Agregado
-                    State = State.Activo, // <--- AGREGA ESTO
+                    State = State.Activo,
+                    Fase = FaseGiro.Registrado,// <--- AGREGA ESTO
                     CreatedBy = "System",
                     Created = fechaEstatica,
                     LastModifyBy = "",                   // <-- Nombre corregido

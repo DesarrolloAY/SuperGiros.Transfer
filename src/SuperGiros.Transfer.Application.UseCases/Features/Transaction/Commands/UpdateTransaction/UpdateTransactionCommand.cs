@@ -1,6 +1,6 @@
 using MediatR;
 using SuperGiros.Transfer.Domain.Enums;
-using System.Transactions;
+
 
 namespace SuperGiros.Transfer.Application.UseCases.Features.Transaction.Commands.UpdateTransaction
 {
@@ -14,6 +14,7 @@ namespace SuperGiros.Transfer.Application.UseCases.Features.Transaction.Commands
         public string Descripcion { get; set; }
         public string Sede { get; set; }
         public DateTime FechaRealizacion { get; set; }
-        public TransactionStatus State { get; set; }
+        public State State { get; set; }      // <--- Cambiado de TransactionStatus a State
+        public FaseGiro Fase { get; set; }
     }
 }

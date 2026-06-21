@@ -13,5 +13,6 @@ namespace SuperGiros.Transfer.Application.UseCases.Features.Transaction.Querys.G
         public string Sede { get; set; } = string.Empty;
         public DateTime FechaRealizacion { get; set; }
         public State State { get; set; } // ✅ Agregado
+        public FaseGiro Fase { get; set; }
     }
 }

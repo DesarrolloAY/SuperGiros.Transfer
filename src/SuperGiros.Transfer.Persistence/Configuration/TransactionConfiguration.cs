@@ -33,6 +33,9 @@ namespace SuperGiros.Transfer.Persistence.Configuration
 
             builder.Property(t => t.FechaRealizacion)
                 .IsRequired();
+            builder.Property(t => t.Fase)
+                .IsRequired()
+                .HasDefaultValue(FaseGiro.Registrado);
         }
     }
 }

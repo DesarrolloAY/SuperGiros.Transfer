@@ -18,6 +18,9 @@ namespace SuperGiros.Transfer.Domain.Entities
         public string Sede { get; set; }
         public DateTime FechaRealizacion { get; set; }
 
+        // El nuevo campo para el flujo de Niubiz y n8n
+        public FaseGiro Fase { get; set; } = FaseGiro.Registrado;
+
         // Constructor vacio requerido por Entity Framework
         protected Transaction() { }
 
@@ -51,7 +54,8 @@ namespace SuperGiros.Transfer.Domain.Entities
                 Moneda = moneda,
                 Descripcion = descripcion,
                 Sede = sede,
-                FechaRealizacion = fechaRealizacion
+                FechaRealizacion = fechaRealizacion,
+                Fase = FaseGiro.Registrado
             };
 
             return transaction;

@@ -20,6 +20,13 @@ enum TransactionType {
     Giro          = 1;
 }
 
+enum TransactionPhase {
+    FASE_REGISTRADO = 0;
+    FASE_PAGADO     = 1;
+    FASE_ENVIO      = 2;
+    FASE_COMPLETADO = 3;
+}
+
 // Estado global: Inactivo=0, Activo=1, Completado=2
 enum TransactionState {
     TRANSACTION_INACTIVO   = 0;
@@ -49,6 +56,7 @@ message UpdateTransactionRequest {
     string                    Sede             = 7;
     google.protobuf.Timestamp FechaRealizacion = 8;
     TransactionState          State            = 9;
+    TransactionPhase          Fase             = 10;
 }
 
 message UpdateTransactionResponse { ServerResponse ServerResponse = 1; TransactionResponse Data = 2; }
@@ -73,4 +81,5 @@ message TransactionResponse {
     string                    Sede             = 7;
     google.protobuf.Timestamp FechaRealizacion = 8;
     TransactionState          State            = 9;
+    TransactionPhase Fase             = 10; // Mapea el flujo de n8n/Niubiz
 }

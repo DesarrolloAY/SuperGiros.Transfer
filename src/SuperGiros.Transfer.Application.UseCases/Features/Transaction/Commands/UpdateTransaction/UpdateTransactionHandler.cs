@@ -28,7 +28,8 @@ namespace SuperGiros.Transfer.Application.UseCases.Features.Transaction.Commands
             transaction.Descripcion = request.Descripcion;
             transaction.Sede = request.Sede;
             transaction.FechaRealizacion = request.FechaRealizacion;
-            transaction.State = (Domain.Enums.State)request.State;
+            transaction.State = request.State; // Al ser ambos del mismo tipo (Domain.Enums.State), asigna directo
+            transaction.Fase = request.Fase;   // Esta es la línea que guarda el estado de ventanilla
 
             _applicationDbContext.transactions.Update(transaction);
 

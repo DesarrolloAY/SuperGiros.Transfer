@@ -20,24 +20,32 @@ namespace SuperGiros.Transfer.Application.UseCases.Commons.Mapping
     {
         public MappingProfile()
         {
+            // Mapeos de Usuarios
             CreateMap<CreateUserCommand, User>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
 
+            // Mapeos de Clientes (Customer)
             CreateMap<CreateCustomerCommand, Customer>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<UpdateCustomerCommand, Customer>();
             CreateMap<Customer, GetCustomerResponseDto>();
             CreateMap<Customer, GetAllCustomerResponseDto>();
 
+            // Mapeos de Oficinas (Offices)
             CreateMap<CreateOfficeCommand, Offices>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<UpdateOfficeCommand, Offices>();
             CreateMap<Offices, GetOfficeResponseDto>();
             CreateMap<Offices, GetAllOfficeResponseDto>();
 
+            // Mapeos de Transacciones (Transactions)
+            // Nota: El nuevo campo 'Fase' y 'State' se mapean automáticamente por convención 
+            // de nombres ya que los comandos, DTOs y la Entidad comparten los mismos tipos de C#
             CreateMap<CreateTransactionCommand, Transaction>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
+
             CreateMap<UpdateTransactionCommand, Transaction>();
+
             CreateMap<Transaction, GetTransactionResponseDto>();
             CreateMap<Transaction, GetAllTransactionResponseDto>();
         }
