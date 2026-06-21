@@ -9,5 +9,5 @@ data:
   JwtSettings__Audience: "SuperGiros.Transfer.Users"
   JwtSettings__ExpirationHours: "1"
   MSSQL_PID: "Express"
-  # 🌟 NUEVO: Esto inyecta la URL de React para que el backend acepte las peticiones en Kubernetes
+  # URL del Frontend de React para el control de políticas de CORS
   CorsSettings__AllowedOrigins__0: "http://localhost:5173"

@@ -15,13 +15,13 @@ spec:
     spec:
       containers:
       - name: supergiros-api
-        image: supergiros-api:latest
-        imagePullPolicy: Never
+        image: supergirostransfer-api:latest # El nombre exacto de la imagen local generada por tu Docker
+        imagePullPolicy: Never # Evita que busque la imagen en Internet, forzando el uso del entorno local
         ports:
-        - containerPort: 5240   # HTTP1 / Swagger
-        - containerPort: 5241   # HTTP2 / gRPC
+        - containerPort: 5240   # HTTP1 / Swagger / gRPC-Web
+        - containerPort: 5241   # HTTP2 / gRPC Nativo Puro
         env:
-        # 🌟 VITAL: Esto le ordena a .NET en Docker respetar tus dos puertos nativos
+        # Inyecta los puertos nativos para que Kestrel los reconozca dentro del Pod
         - name: ASPNETCORE_URLS
           value: "http://+:5240;http://+:5241"
         - name: ASPNETCORE_ENVIRONMENT
@@ -44,6 +44,11 @@ spec:
             configMapKeyRef:
               name: supergiros-config
               key: JwtSettings__ExpirationHours
+        - name: CorsSettings__AllowedOrigins__0
+          valueFrom:
+            configMapKeyRef:
+              name: supergiros-config
+              key: CorsSettings__AllowedOrigins__0
         - name: ConnectionStrings__TransferConnection
           valueFrom:
             secretKeyRef:
@@ -56,8 +61,8 @@ spec:
               key: jwt-secret
         readinessProbe:
           httpGet:
-            path: /
-            port: 5240          # Golpea el puerto HTTP1 para saber si está vivo
+            path: / # Golpea el endpoint "/" configurado en tu Program.cs
+            port: 5240
           initialDelaySeconds: 20
           periodSeconds: 10
         resources:
@@ -80,9 +85,9 @@ spec:
   - name: http
     port: 5240
     targetPort: 5240
-    nodePort: 30220             # Tu puerto externo para Swagger / REST
+    nodePort: 30220             # Puerto externo para Swagger / REST / gRPC-Web en Windows
   - name: grpc
     port: 5241
     targetPort: 5241
-    nodePort: 30221             # Tu puerto externo exclusivo para el tráfico gRPC binario
+    nodePort: 30221             # Puerto externo exclusivo para llamadas gRPC binarias puras
   type: NodePort
