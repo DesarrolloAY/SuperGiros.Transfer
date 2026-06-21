@@ -1,16 +1,28 @@
+Protocol Buffers
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 import "Protos/Common.proto";
 
 option csharp_namespace = "SuperGiros.Transfer.Services.gRPC.Protos";
 
 service Offices {
-    rpc CreateOffice (CreateOfficeRequest) returns (CreateOfficeResponse);
-    rpc UpdateOffice (UpdateOfficeRequest) returns (UpdateOfficeResponse);
-    rpc CancelOffice (CancelOfficeRequest) returns (CancelOfficeResponse);
-    rpc GetOffice    (GetOfficeRequest)    returns (GetOfficeResponse);
-    rpc GetAllOffice (GetAllOfficeRequest) returns (GetAllOfficeResponse);
+    rpc CreateOffice (CreateOfficeRequest) returns (CreateOfficeResponse) {
+        option (google.api.http) = { post: "/api/Office", body: "*" };
+    }
+    rpc UpdateOffice (UpdateOfficeRequest) returns (UpdateOfficeResponse) {
+        option (google.api.http) = { put: "/api/Office/{id}", body: "*" };
+    }
+    rpc CancelOffice (CancelOfficeRequest) returns (CancelOfficeResponse) {
+        option (google.api.http) = { delete: "/api/Office/{id}" };
+    }
+    rpc GetOffice (GetOfficeRequest) returns (GetOfficeResponse) {
+        option (google.api.http) = { get: "/api/Office/{id}" };
+    }
+    rpc GetAllOffice (GetAllOfficeRequest) returns (GetAllOfficeResponse) {
+        option (google.api.http) = { get: "/api/Office" };
+    }
 }
+
 
 enum OfficeStatus {
     Inactiva   = 0;

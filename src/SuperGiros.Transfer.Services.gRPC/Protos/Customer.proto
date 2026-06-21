@@ -1,21 +1,29 @@
 syntax = "proto3";
-
-import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 import "Protos/Common.proto";
 
 option csharp_namespace = "SuperGiros.Transfer.Services.gRPC.Protos";
-
 package Protos;
 
 service Customers {
-    rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerResponse);
-    rpc UpdateCustomer (UpdateCustomerRequest) returns (UpdateCustomerResponse);
-    rpc CancelCustomer (CancelCustomerRequest) returns (CancelCustomerResponse);
-    rpc GetCustomer    (GetCustomerRequest)    returns (GetCustomerResponse);
-    rpc GetAllCustomer (GetAllCustomerRequest) returns (GetAllCustomerResponse);
-    
-    // 🚀 NUEVA RUTA DE VENTANILLA: Busca explícitamente usando el parámetro NroDocumento (DNI)
-    rpc GetCustomerByDni (GetCustomerByDniRequest) returns (GetCustomerResponse);
+    rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerResponse) {
+        option (google.api.http) = { post: "/api/Customer", body: "*" };
+    }
+    rpc UpdateCustomer (UpdateCustomerRequest) returns (UpdateCustomerResponse) {
+        option (google.api.http) = { put: "/api/Customer/{id}", body: "*" };
+    }
+    rpc CancelCustomer (CancelCustomerRequest) returns (CancelCustomerResponse) {
+        option (google.api.http) = { delete: "/api/Customer/{id}" };
+    }
+    rpc GetCustomer (GetCustomerRequest) returns (GetCustomerResponse) {
+        option (google.api.http) = { get: "/api/Customer/{id}" };
+    }
+    rpc GetAllCustomer (GetAllCustomerRequest) returns (GetAllCustomerResponse) {
+        option (google.api.http) = { get: "/api/Customer" };
+    }
+    rpc GetCustomerByDni (GetCustomerByDniRequest) returns (GetCustomerResponse) {
+        option (google.api.http) = { get: "/api/Customer/dni/{nroDocumento}" };
+    }
 }
 
 enum CustomerDocumentType {

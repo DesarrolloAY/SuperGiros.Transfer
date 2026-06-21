@@ -1,13 +1,25 @@
 ﻿syntax = "proto3";
+import "google/api/annotations.proto";
+
 option csharp_namespace = "SuperGiros.Transfer.Services.gRPC.Protos";
 package user;
 
 service UserServices {
-  rpc Login (LoginRequest) returns (LoginResponse);
-  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
-  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
-  rpc ChangeUserState (ChangeUserStateRequest) returns (ChangeUserStateResponse);
-  rpc GetUsers (GetUsersRequest) returns (GetUsersResponse);
+  rpc Login (LoginRequest) returns (LoginResponse) {
+      option (google.api.http) = { post: "/api/Auth/login", body: "*" };
+  }
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
+      option (google.api.http) = { post: "/api/User", body: "*" };
+  }
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {
+      option (google.api.http) = { put: "/api/User/{id}", body: "*" };
+  }
+  rpc ChangeUserState (ChangeUserStateRequest) returns (ChangeUserStateResponse) {
+      option (google.api.http) = { patch: "/api/User/{id}/state", body: "*" };
+  }
+  rpc GetUsers (GetUsersRequest) returns (GetUsersResponse) {
+      option (google.api.http) = { get: "/api/User" };
+  }
 }
 
 message LoginRequest {

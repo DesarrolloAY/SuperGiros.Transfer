@@ -1,18 +1,25 @@
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 import "Protos/Common.proto";
 
 option csharp_namespace = "SuperGiros.Transfer.Services.gRPC.Protos";
 
-// ✅ LÍNEA CLAVE AGREGADA:
-package Protos;
-
-service Transactions {
-    rpc CreateTransaction (CreateTransactionRequest) returns (CreateTransactionResponse);
-    rpc UpdateTransaction (UpdateTransactionRequest) returns (UpdateTransactionResponse);
-    rpc CancelTransaction (CancelTransactionRequest) returns (CancelTransactionResponse);
-    rpc GetTransaction    (GetTransactionRequest)    returns (GetTransactionResponse);
-    rpc GetAllTransaction (GetAllTransactionRequest) returns (GetAllTransactionResponse);
+service TransactionService {
+    rpc CreateTransaction (CreateTransactionRequest) returns (CreateTransactionResponse) {
+        option (google.api.http) = { post: "/api/Transaction", body: "*" };
+    }
+    rpc UpdateTransaction (UpdateTransactionRequest) returns (UpdateTransactionResponse) {
+        option (google.api.http) = { put: "/api/Transaction/{id}", body: "*" };
+    }
+    rpc CancelTransaction (CancelTransactionRequest) returns (CancelTransactionResponse) {
+        option (google.api.http) = { delete: "/api/Transaction/{id}" };
+    }
+    rpc GetTransaction (GetTransactionRequest) returns (GetTransactionResponse) {
+        option (google.api.http) = { get: "/api/Transaction/{id}" };
+    }
+    rpc GetAllTransaction (GetAllTransactionRequest) returns (GetAllTransactionResponse) {
+        option (google.api.http) = { get: "/api/Transaction" };
+    }
 }
 
 enum TransactionType {
