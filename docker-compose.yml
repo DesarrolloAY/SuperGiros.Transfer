@@ -30,14 +30,15 @@ services:
     container_name: supergiros-api
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
+      # Ajustado para que apunte al contenedor de SQL Server de la red interna de Docker
       ConnectionStrings__TransferConnection: "Server=sqlserver,1433;Database=transfer_docker;User ID=sa;Password=SuperGiros@2026!;TrustServerCertificate=true;"
       JwtSettings__SecretKey: "S3gurid4d.Tr4nsf3r.Sup3rG1r0s.K3y.2026!*"
       JwtSettings__Issuer: "SuperGiros.Transfer.API"
       JwtSettings__Audience: "SuperGiros.Transfer.Users"
       JwtSettings__ExpirationHours: "1"
     ports:
-      - "5220:5220"
-      - "5221:5221"
+      - "5240:5240"  # Puerto HTTP1 (Swagger / REST / gRPC-Web para tu Frontend)
+      - "5241:5241"  # Puerto HTTP2 (gRPC nativo puro)
     depends_on:
       sqlserver:
         condition: service_healthy
