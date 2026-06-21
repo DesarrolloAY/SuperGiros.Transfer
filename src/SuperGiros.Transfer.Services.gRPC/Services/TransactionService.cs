@@ -10,7 +10,7 @@ using SuperGiros.Transfer.Application.UseCases.Features.Transaction.Querys.GetAl
 
 namespace SuperGiros.Transfer.Services.gRPC.Services
 {
-    public class TransactionService : Transactions.TransactionsBase
+    public class TransactionService : Protos.TransactionService.TransactionServiceBase
     {
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;

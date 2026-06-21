@@ -1,28 +1,29 @@
-Protocol Buffers
 syntax = "proto3";
+
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "Protos/Common.proto";
 
 option csharp_namespace = "SuperGiros.Transfer.Services.gRPC.Protos";
+package Protos;
 
 service Offices {
     rpc CreateOffice (CreateOfficeRequest) returns (CreateOfficeResponse) {
         option (google.api.http) = { post: "/api/Office", body: "*" };
     }
     rpc UpdateOffice (UpdateOfficeRequest) returns (UpdateOfficeResponse) {
-        option (google.api.http) = { put: "/api/Office/{id}", body: "*" };
+        option (google.api.http) = { put: "/api/Office/{Id}", body: "*" };
     }
     rpc CancelOffice (CancelOfficeRequest) returns (CancelOfficeResponse) {
-        option (google.api.http) = { delete: "/api/Office/{id}" };
+        option (google.api.http) = { delete: "/api/Office/{Id}" };
     }
     rpc GetOffice (GetOfficeRequest) returns (GetOfficeResponse) {
-        option (google.api.http) = { get: "/api/Office/{id}" };
+        option (google.api.http) = { get: "/api/Office/{Id}" };
     }
     rpc GetAllOffice (GetAllOfficeRequest) returns (GetAllOfficeResponse) {
         option (google.api.http) = { get: "/api/Office" };
     }
 }
-
 
 enum OfficeStatus {
     Inactiva   = 0;
@@ -39,7 +40,10 @@ message CreateOfficeRequest {
     OfficeStatus Estado         = 6;
 }
 
-message CreateOfficeResponse { ServerResponse ServerResponse = 1; OfficeResponse Data = 2; }
+message CreateOfficeResponse { 
+    ServerResponse ServerResponse = 1; 
+    OfficeResponse Data = 2; 
+}
 
 message UpdateOfficeRequest {
     int32        Id             = 1;
@@ -51,7 +55,10 @@ message UpdateOfficeRequest {
     OfficeStatus Estado         = 7;
 }
 
-message UpdateOfficeResponse { ServerResponse ServerResponse = 1; OfficeResponse Data = 2; }
+message UpdateOfficeResponse { 
+    ServerResponse ServerResponse = 1; 
+    OfficeResponse Data = 2; 
+}
 
 message CancelOfficeRequest  { int32 Id = 1; }
 message CancelOfficeResponse { ServerResponse ServerResponse = 1; }

@@ -1,5 +1,6 @@
 syntax = "proto3";
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "Protos/Common.proto";
 
 option csharp_namespace = "SuperGiros.Transfer.Services.gRPC.Protos";
@@ -9,20 +10,26 @@ service Customers {
     rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerResponse) {
         option (google.api.http) = { post: "/api/Customer", body: "*" };
     }
+    
     rpc UpdateCustomer (UpdateCustomerRequest) returns (UpdateCustomerResponse) {
-        option (google.api.http) = { put: "/api/Customer/{id}", body: "*" };
+        option (google.api.http) = { put: "/api/Customer/{Id}", body: "*" };
     }
+    
     rpc CancelCustomer (CancelCustomerRequest) returns (CancelCustomerResponse) {
-        option (google.api.http) = { delete: "/api/Customer/{id}" };
+        option (google.api.http) = { delete: "/api/Customer/{Id}" };
     }
+    
     rpc GetCustomer (GetCustomerRequest) returns (GetCustomerResponse) {
-        option (google.api.http) = { get: "/api/Customer/{id}" };
+        option (google.api.http) = { get: "/api/Customer/{Id}" };
     }
+    
     rpc GetAllCustomer (GetAllCustomerRequest) returns (GetAllCustomerResponse) {
         option (google.api.http) = { get: "/api/Customer" };
     }
+    
+    // RUTA DE VENTANILLA: Busca explícitamente usando el parámetro NroDocumento (DNI)
     rpc GetCustomerByDni (GetCustomerByDniRequest) returns (GetCustomerResponse) {
-        option (google.api.http) = { get: "/api/Customer/dni/{nroDocumento}" };
+        option (google.api.http) = { get: "/api/Customer/dni/{NroDocumento}" };
     }
 }
 
@@ -37,7 +44,6 @@ enum CustomerState {
     CUSTOMER_COMPLETADO = 2;
 }
 
-// 🔍 NUEVO MENSAJE DE ENTRADA EXCLUSIVO PARA EL DNI
 message GetCustomerByDniRequest {
     int32 NroDocumento = 1; 
 }
@@ -73,15 +79,18 @@ message UpdateCustomerResponse {
 }
 
 message CancelCustomerRequest  { int32 Id = 1; }
+
 message CancelCustomerResponse { ServerResponse ServerResponse = 1; }
 
 message GetCustomerRequest     { int32 Id = 1; }
+
 message GetCustomerResponse    { 
     ServerResponse ServerResponse = 1; 
     CustomerResponse Data = 2; 
 }
 
 message GetAllCustomerRequest  {}
+
 message GetAllCustomerResponse { 
     ServerResponse ServerResponse = 1; 
     repeated CustomerResponse Data = 2; 
@@ -95,6 +104,6 @@ message CustomerResponse {
     string               Celular         = 5;
     string               email           = 6;
     CustomerDocumentType TipoDocumento   = 7;
-    int32                NroDocumento    = 8; // 💳 Este campo representará tu DNI/CE en el Frontend
+    int32                NroDocumento    = 8; 
     CustomerState        State           = 9;
 }

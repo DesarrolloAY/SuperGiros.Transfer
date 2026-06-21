@@ -1,8 +1,11 @@
 syntax = "proto3";
+
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "Protos/Common.proto";
 
 option csharp_namespace = "SuperGiros.Transfer.Services.gRPC.Protos";
+package Protos;
 
 service TransactionService {
     rpc CreateTransaction (CreateTransactionRequest) returns (CreateTransactionResponse) {

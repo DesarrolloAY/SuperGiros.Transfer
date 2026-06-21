@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 option csharp_namespace = "SuperGiros.Transfer.Services.gRPC.Protos";
+package Protos;
 
 message ServerResponse {
     bool IsSuccess = 1;

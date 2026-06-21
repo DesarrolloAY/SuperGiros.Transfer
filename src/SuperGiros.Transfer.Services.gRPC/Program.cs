@@ -99,6 +99,7 @@ builder.Services.AddGrpc(options =>
 {
     options.Interceptors.Add<GlobalExceptionHandler>();
     options.Interceptors.Add<AuthInterceptor>();
+    options.EnableDetailedErrors = true;
 }).AddJsonTranscoding();
 
 // 4. Capas de la aplicación
