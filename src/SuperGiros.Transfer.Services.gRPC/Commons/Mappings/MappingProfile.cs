@@ -1,19 +1,18 @@
 using AutoMapper;
 using Google.Protobuf.WellKnownTypes;
-using SuperGiros.Transfer.Application.UseCases.Features.Customer.Commands.CreateCustomer;
-using SuperGiros.Transfer.Application.UseCases.Features.Customer.Commands.UpdateCustomer;
-using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetAllCustomer;
-using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetCustomer;
+using SuperGiros.Transfer.Services.gRPC.Protos;
 using SuperGiros.Transfer.Application.UseCases.Features.Offices.Commands.CreateOffice;
 using SuperGiros.Transfer.Application.UseCases.Features.Offices.Commands.UpdateOffice;
-using SuperGiros.Transfer.Application.UseCases.Features.Offices.Querys.GetAllOffice;
 using SuperGiros.Transfer.Application.UseCases.Features.Offices.Querys.GetOffice;
+using SuperGiros.Transfer.Application.UseCases.Features.Offices.Querys.GetAllOffice;
+using SuperGiros.Transfer.Application.UseCases.Features.Customer.Commands.CreateCustomer;
+using SuperGiros.Transfer.Application.UseCases.Features.Customer.Commands.UpdateCustomer;
+using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetCustomer;
+using SuperGiros.Transfer.Application.UseCases.Features.Customer.Querys.GetAllCustomer;
 using SuperGiros.Transfer.Application.UseCases.Features.Transaction.Commands.CreateTransaction;
 using SuperGiros.Transfer.Application.UseCases.Features.Transaction.Commands.UpdateTransaction;
-using SuperGiros.Transfer.Application.UseCases.Features.Transaction.Querys.GetAllTransaction;
 using SuperGiros.Transfer.Application.UseCases.Features.Transaction.Querys.GetTransaction;
-using SuperGiros.Transfer.Services.gRPC.Protos;
-using static SuperGiros.Transfer.Services.gRPC.Protos.Transactions;
+using SuperGiros.Transfer.Application.UseCases.Features.Transaction.Querys.GetAllTransaction;
 using DomainEnums = SuperGiros.Transfer.Domain.Enums;
 
 namespace SuperGiros.Transfer.Services.gRPC.Commons.Mappings
@@ -39,13 +38,11 @@ namespace SuperGiros.Transfer.Services.gRPC.Commons.Mappings
             CreateMap<DomainEnums.OfficeStatus, OfficeStatus>()
                 .ConvertUsing(src => (OfficeStatus)(int)src);
 
-            // DTOs -> Proto Response
             CreateMap<GetAllOfficeResponseDto, OfficeResponse>()
                 .ForMember(d => d.Estado, o => o.MapFrom(s => (OfficeStatus)(int)s.Estado));
             CreateMap<GetOfficeResponseDto, OfficeResponse>()
                 .ForMember(d => d.Estado, o => o.MapFrom(s => (OfficeStatus)(int)s.Estado));
 
-            // Proto Request -> Commands
             CreateMap<CreateOfficeRequest, CreateOfficeCommand>()
                 .ForMember(d => d.Estado, o => o.MapFrom(s => (DomainEnums.OfficeStatus)(int)s.Estado));
             CreateMap<UpdateOfficeRequest, UpdateOfficeCommand>()
@@ -53,19 +50,38 @@ namespace SuperGiros.Transfer.Services.gRPC.Commons.Mappings
 
 
             // ==========================================
-            // MAPEOS DE CLIENTES (Customer)
+            // MAPEOS DE CLIENTES (Customer) - ¡AGREGADO REGLAS DE CONVERSIÓN DE ENUMS!
             // ==========================================
-            CreateMap<GetAllCustomerResponseDto, CustomerResponse>();
-            CreateMap<GetCustomerResponseDto, CustomerResponse>();
+            CreateMap<CustomerDocumentType, DomainEnums.CustomerDocumentType>()
+                .ConvertUsing(src => (DomainEnums.CustomerDocumentType)(int)src);
+            CreateMap<DomainEnums.CustomerDocumentType, CustomerDocumentType>()
+                .ConvertUsing(src => (CustomerDocumentType)(int)src);
 
-            CreateMap<CreateCustomerRequest, CreateCustomerCommand>();
-            CreateMap<UpdateCustomerRequest, UpdateCustomerCommand>();
+            CreateMap<CustomerState, DomainEnums.State>()
+                .ConvertUsing(src => (DomainEnums.State)(int)src);
+            CreateMap<DomainEnums.State, CustomerState>()
+                .ConvertUsing(src => (CustomerState)(int)src);
+
+            // DTOs -> Proto Response (Salida)
+            CreateMap<GetAllCustomerResponseDto, CustomerResponse>()
+                .ForMember(d => d.TipoDocumento, o => o.MapFrom(s => (CustomerDocumentType)(int)s.TipoDocumento))
+                .ForMember(d => d.State, o => o.MapFrom(s => (CustomerState)(int)s.State));
+
+            CreateMap<GetCustomerResponseDto, CustomerResponse>()
+                .ForMember(d => d.TipoDocumento, o => o.MapFrom(s => (CustomerDocumentType)(int)s.TipoDocumento))
+                .ForMember(d => d.State, o => o.MapFrom(s => (CustomerState)(int)s.State));
+
+            // Proto Request -> Commands (Entrada)
+            CreateMap<CreateCustomerRequest, CreateCustomerCommand>()
+                .ForMember(d => d.TipoDocumento, o => o.MapFrom(s => (DomainEnums.CustomerDocumentType)(int)s.TipoDocumento));
+
+            CreateMap<UpdateCustomerRequest, UpdateCustomerCommand>()
+                .ForMember(d => d.TipoDocumento, o => o.MapFrom(s => (DomainEnums.CustomerDocumentType)(int)s.TipoDocumento));
 
 
             // ==========================================
             // MAPEOS DE TRANSACCIONES (Transactions)
             // ==========================================
-            // Conversiones explícitas para Enums de Transacción entre gRPC Proto y C# Dominio
             CreateMap<TransactionState, DomainEnums.State>()
                 .ConvertUsing(src => (DomainEnums.State)(int)src);
             CreateMap<DomainEnums.State, TransactionState>()
@@ -76,7 +92,6 @@ namespace SuperGiros.Transfer.Services.gRPC.Commons.Mappings
             CreateMap<DomainEnums.FaseGiro, TransactionPhase>()
                 .ConvertUsing(src => (TransactionPhase)(int)src);
 
-            // DTOs -> Proto Response (Salida del servicio gRPC)
             CreateMap<GetAllTransactionResponseDto, TransactionResponse>()
                 .ForMember(d => d.State, o => o.MapFrom(s => (TransactionState)(int)s.State))
                 .ForMember(d => d.Fase, o => o.MapFrom(s => (TransactionPhase)(int)s.Fase));
@@ -85,7 +100,6 @@ namespace SuperGiros.Transfer.Services.gRPC.Commons.Mappings
                 .ForMember(d => d.State, o => o.MapFrom(s => (TransactionState)(int)s.State))
                 .ForMember(d => d.Fase, o => o.MapFrom(s => (TransactionPhase)(int)s.Fase));
 
-            // Proto Request -> Commands (Entrada al servicio gRPC)
             CreateMap<CreateTransactionRequest, CreateTransactionCommand>();
 
             CreateMap<UpdateTransactionRequest, UpdateTransactionCommand>()
