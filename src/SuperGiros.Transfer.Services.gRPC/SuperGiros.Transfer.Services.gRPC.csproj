@@ -13,14 +13,14 @@
     <None Remove="Protos\user.proto" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Protobuf Include="Protos\Common.proto" />
-    <Protobuf Include="Protos\Customer.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\Office.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\Transaction.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\user.proto" GrpcServices="Server" />
-  </ItemGroup>
+    <ItemGroup>
+		<Protobuf Include="Protos/Common.proto" />
+		<Protobuf Include="Protos/Customer.proto" GrpcServices="Server" />
+		<Protobuf Include="Protos/greet.proto" GrpcServices="Server" />
+		<Protobuf Include="Protos/Office.proto" GrpcServices="Server" />
+		<Protobuf Include="Protos/Transaction.proto" GrpcServices="Server" />
+		<Protobuf Include="Protos/user.proto" GrpcServices="Server" />
+	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />

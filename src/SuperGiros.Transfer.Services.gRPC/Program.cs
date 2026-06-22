@@ -115,9 +115,17 @@ builder.Services.AddAutoMapper(
     typeof(SuperGiros.Transfer.Services.gRPC.Commons.Mappings.MappingProfile));
 
 builder.Services.AddControllers();
+
+// 👇 1. LÍNEA MÁGICA: Obliga a Swagger a explorar las rutas de gRPC Transcoding
+builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddGrpcSwagger();
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "SuperGiros API", Version = "v1" });
+
+    // 👇 2. EVITA EL COLAPSO: Si Swagger ve la ruta Auth duplicada, se queda con la primera y no rompe la página
+    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
