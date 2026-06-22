@@ -183,5 +183,8 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
 }
+// Ruta de diagnóstico: Si esto funciona, el servidor y el túnel están perfectos.
+app.MapGet("/debug-test", () => "¡La API responde correctamente!");
+
 
 app.Run();
